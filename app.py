@@ -10,15 +10,8 @@ ps = PorterStemmer()
 # -----------------------------
 # Download NLTK resources from file
 # -----------------------------
-with open("nltk_requirements.txt") as f:
-    for resource in f.read().splitlines():
-        try:
-            if resource == "punkt":
-                nltk.data.find("tokenizers/punkt")
-            else:
-                nltk.data.find(f"corpora/{resource}")
-        except LookupError:
-            nltk.download(resource, quiet=True)
+for resource in ["punkt", "stopwords"]:
+    nltk.download(resource, quiet=True)
 
 
 def transform_text(text):
