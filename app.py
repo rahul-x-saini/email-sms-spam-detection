@@ -8,8 +8,19 @@ from nltk.stem.porter import PorterStemmer
 ps = PorterStemmer()
 
 # -----------------------------
-# Text preprocessing function
+# Download NLTK resources from file
 # -----------------------------
+with open("nltk_requirements.txt") as f:
+    for resource in f.read().splitlines():
+        try:
+            if resource == "punkt":
+                nltk.data.find("tokenizers/punkt")
+            else:
+                nltk.data.find(f"corpora/{resource}")
+        except LookupError:
+            nltk.download(resource, quiet=True)
+
+
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -19,9 +30,7 @@ def transform_text(text):
     y.clear()
 
     stop_words = set(stopwords.words('english'))
-    for i in text:
-        if i not in stop_words and i not in string.punctuation:
-            y.append(ps.stem(i))
+    y = [ps.stem(i) for i in text if i not in stop_words]
 
     return " ".join(y)
 
@@ -90,6 +99,7 @@ if st.button("Predict"):
         if prob is not None:
             col2.markdown("<h4 style='text-align:center;'>Spam Probability</h4>", unsafe_allow_html=True)
             st.progress(int(prob * 100))
+            col2.markdown(f"<p style='text-align:center;'>{prob * 100:.1f}%</p>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
